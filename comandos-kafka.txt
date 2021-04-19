@@ -1,0 +1,68 @@
+Devido a configurações do docker-compose, deve-se colocar o seguinte mapeamento no hosts:
+#Para testes do kafka
+127.0.0.1 host.docker.internal
+
+
+# Criando topicos
+kafka-topics --create --bootstrap-server localhost:9090 --replication-factor:1 --partition 3 --topic meutopico
+Parametros: --create = Cria tópico
+            --boostrap-server = caminho:porta do servidor (configuração docker-compose)
+            --replication-factor: indica quantas cópias do tópicos serão distribuídas nos brokers que fazem parte do cluster kafka
+            --partition: quantidade de partições que serão criadas no tópico
+            --topic: nome do tópico a ser criado
+
+#Lista os tópicos existentes no servidor
+kafka-topics --list --bootstrap-server localhost:9092
+
+
+#Criar um produtor para o tópico
+kafka-console-producer --broker-list localhost:9092 --topic meutopico
+Parâmetros: --broker-list: caminho:porta do servidor
+            --topic: nome do tópico onde o produtor vai publicar a mensagem
+
+#Criar um consumidor para o tópico (lê as mensagens a partir da última lida)
+kafka-console-consumer --bootstrap-server localhost:9092 --topic meutopico
+
+#Criar um consumidor para o tópico (lê todas as mensagens já publicadas e lidas)
+kafka-console-consumer --bootstrap-server localhost:9092 --topic meutopico --from-beginning
+Parâmetro: --from-beginning: consome todas as mensagens publicadas, inclusive as já lidas anteriormente
+
+#Criar um consumidor para o tópico e associálo a um grupo
+kafka-console-consumer --bootstrap-server localhost:9092 --topic meutopico --from-beginning --group a
+Parametros: --group: nome do grupo no qual o consumidor vai ser associado (se não existir o grupo ele cria)
+
+
+#Exibe as informações de um tópico específico
+kafka-topics --describe --bootstrap-server localhost:9092 --topic meutopico
+
+#Exibe as informações de como um determinado grupo se divide para a leitura do tópico
+kafka-consumer-groups --group a --bootstrap-server localhost:9092 --describe
+Parâmetors: --describe: Exibe as informações do grupo indicado
+
+
+#URLS
+#Control Center
+http://localhost:9021
+#Kibana
+http://localhost:5601
+
+
+#Kibana, ver os dados:
+Menu: Analytics -> Discovery
+
+#comandos mysql
+#Acessar o container
+docker exec -it kafka_mysql_1 bash
+
+#acessar o mysql
+mysql -uroot -p
+#no prompt inserir a senha "root"
+
+#criar uma tabela
+CREATE TABLE products (ID int, Name varchar(250));
+#mudar para a base de dados
+use products;
+#exibir as tabelas existentes
+show tables;
+#inserir registro 
+insert into products values(10,"Produto 10");
